@@ -1,4 +1,4 @@
-package io.github.igorartsoft.kafkademo.orderservice;
+package dev.igorartsoft.orderservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package io.github.igorartsoft.kafkademo.orderservice;
+package dev.igorartsoft.orderservice.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
