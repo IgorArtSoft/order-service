@@ -1,40 +1,34 @@
 package dev.igorartsoft.orderservice.controller;
 
-
+import dev.igorartsoft.orderservice.service.OrderService;
+import dev.igorartsoft.orderservice.dto.OrderRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import dev.igorartsoft.orderservice.dto.OrderRequest;
-import dev.igorartsoft.orderservice.event.OrderEvent;
-import dev.igorartsoft.orderservice.service.OrderProducerService;
-
-import java.time.Instant;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
 
-    private final OrderProducerService orderProducerService;
+    private final OrderService orderService;
 
-    public OrderController(OrderProducerService orderProducerService) {
-        this.orderProducerService = orderProducerService;
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
     }
 
     @PostMapping
     public ResponseEntity<String> createOrder(@RequestBody OrderRequest request) {
 
-        OrderEvent event = new OrderEvent(
-                UUID.randomUUID().toString(),
-                request.orderId(),
-                request.customerId(),
-                request.amount(),
-                Instant.now()
-        );
+        boolean created = orderService.createOrder(request);
 
-        orderProducerService.sendOrderEvent(event);
+        if (!created) {
+            return ResponseEntity
+                    .status(409)
+                    .body("Order already exists. orderId=" + request.orderId());
+        }
 
-        return ResponseEntity.ok("Order message sent to Kafka. orderId=" + request.orderId());
+        return ResponseEntity
+                .status(201)
+                .body("Order created and event sent. orderId=" + request.orderId());
     }
 }
 
