@@ -1,9 +1,15 @@
 package dev.igorartsoft.orderservice.controller;
 
-import dev.igorartsoft.orderservice.service.OrderService;
-import dev.igorartsoft.orderservice.dto.OrderRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import dev.igorartsoft.orderservice.dto.OrderRequest;
+import dev.igorartsoft.orderservice.service.OrderService;
 
 @RestController
 @RequestMapping("/orders")
@@ -30,6 +36,21 @@ public class OrderController {
                 .status(201)
                 .body("Order created and event sent. orderId=" + request.orderId());
     }
+    
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderRequest> getOrder(@PathVariable String orderId) {
+
+        return orderService.getOrder(orderId)
+                .map(orderDocument -> new OrderRequest(
+                        orderDocument.getOrderId(),
+                        orderDocument.getCustomerId(),
+                        orderDocument.getAmount()
+                ))
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    
 }
+
 
 

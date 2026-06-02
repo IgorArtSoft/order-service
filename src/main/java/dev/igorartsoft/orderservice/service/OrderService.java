@@ -7,6 +7,7 @@ import dev.igorartsoft.orderservice.dto.OrderRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -51,4 +52,11 @@ public class OrderService {
 
         return true;
     }
+
+	public Optional<OrderDocument> getOrder(String orderId) {
+		
+		Optional<OrderDocument> orderRequestInfo = orderRepository.findByOrderId(orderId);
+		return orderRequestInfo;
+		
+	}
 }
