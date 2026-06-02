@@ -1,18 +1,23 @@
 package dev.igorartsoft.orderservice.service;
 
-import dev.igorartsoft.orderservice.event.OrderEvent;
-import dev.igorartsoft.orderservice.model.OrderDocument;
-import dev.igorartsoft.orderservice.repository.OrderRepository;
-import dev.igorartsoft.orderservice.dto.OrderRequest;
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import dev.igorartsoft.orderservice.dto.OrderRequest;
+import dev.igorartsoft.orderservice.event.OrderEvent;
+import dev.igorartsoft.orderservice.model.OrderDocument;
+import dev.igorartsoft.orderservice.repository.OrderRepository;
+
 @Service
 public class OrderService {
 
+	private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+	
     private final OrderRepository orderRepository;
     private final OrderProducerService orderProducerService;
 
@@ -25,6 +30,7 @@ public class OrderService {
     public boolean createOrder(OrderRequest request) {
 
         if (orderRepository.existsByOrderId(request.orderId())) {
+        	log.debug( "Order with this orderId already exist" );
             return false;
         }
 
@@ -39,7 +45,7 @@ public class OrderService {
         );
 
         orderRepository.save(order);
-
+        log.debug("Order created " + order.getOrderId() );
         OrderEvent event = new OrderEvent(
                 UUID.randomUUID().toString(),
                 request.orderId(),
@@ -49,7 +55,7 @@ public class OrderService {
         );
 
         orderProducerService.sendOrderEvent(event);
-
+        log.debug("Kafka event has been created " + event.eventId() );
         return true;
     }
 

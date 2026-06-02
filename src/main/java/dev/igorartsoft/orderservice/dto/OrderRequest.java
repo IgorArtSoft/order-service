@@ -7,4 +7,5 @@ public record OrderRequest(
         String customerId,
         BigDecimal amount
 ) {
+
 }

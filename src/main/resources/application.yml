@@ -21,3 +21,14 @@ spring:
   data:
     mongodb:
       auto-index-creation: false
+
+logging:
+  level:
+    root: INFO
+    dev.igorartsoft: DEBUG
+    org.springframework: INFO
+    org.apache.kafka: INFO
+    org.mongodb.driver: WARN
+
+  file:
+    name: logs/${spring.application.name}.log	  	  
